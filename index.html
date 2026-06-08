@@ -240,9 +240,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:
   </div>
 
   <!-- Urovo Hardware Scanner Input -->
-  <input id="urovo-input" type="text" autocomplete="off" autocorrect="off"
-         autocapitalize="off" spellcheck="false"
-         placeholder="" tabindex="-1">
+  <input id="urovo-input" type="text" inputmode="none" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="" tabindex="-1" readonly>
   <div class="scan-active-indicator">
     <div class="scan-active-dot"></div>
     <span>Hardware scanner ready — press trigger button to scan</span>
@@ -381,10 +379,11 @@ const SCAN_TIMEOUT = 80;
 
 function focusScanner() {
   const inp = document.getElementById('urovo-input');
-  if (inp) {
-    inp.focus();
-    updateFocusStatus(true);
-  }
+  if (!inp) return;
+  inp.removeAttribute('readonly');
+  inp.setAttribute('inputmode', 'none');
+  inp.focus();
+  updateFocusStatus(true);
 }
 
 function updateFocusStatus(focused) {
@@ -418,7 +417,9 @@ function initUrovoScanner() {
   const inp = document.getElementById('urovo-input');
   if (!inp) return;
 
-  // Focus immediately
+  // Focus immediately — remove readonly so scanner can write, inputmode=none hides keyboard
+  inp.removeAttribute('readonly');
+  inp.setAttribute('inputmode', 'none');
   inp.focus();
 
   // Track focus state
@@ -474,11 +475,15 @@ function initUrovoScanner() {
     }
   });
 
-  // Keepalive: refocus every 3s if no form is active
+  // Keepalive: refocus every 3s if no form is active and scanner screen visible
   setInterval(() => {
+    if (!document.getElementById('ss')?.classList.contains('active')) return;
     const active = document.activeElement;
-    const isForm = active && (active.tagName === 'INPUT' && active.id !== 'urovo-input' || active.tagName === 'TEXTAREA');
-    if (!isForm && document.getElementById('ss')?.classList.contains('active')) {
+    const isForm = active && active.id !== 'urovo-input' &&
+                   (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+    if (!isForm) {
+      inp.removeAttribute('readonly');
+      inp.setAttribute('inputmode','none');
       inp.focus();
     }
   }, 3000);
