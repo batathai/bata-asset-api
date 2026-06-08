@@ -6,7 +6,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Bata Asset Audit</title>
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<!-- html5-qrcode removed: using hardware scanner only -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&family=DM+Mono:wght@400;500&display=swap');
 :root {
@@ -248,20 +248,40 @@ body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:
     <span>Hardware scanner ready — press trigger button to scan</span>
   </div>
   <div class="main">
-    <div class="sc-card">
-      <div class="sc-vp">
-        <div id="qr-reader"></div>
-        <div class="sc-ov">
-          <div class="sc-frame">
-            <div class="sfc sfc-tl"></div><div class="sfc sfc-tr"></div>
-            <div class="sfc sfc-bl"></div><div class="sfc sfc-br"></div>
-            <div class="sc-line"></div>
+    <div class="sc-card" onclick="focusScanner()" style="cursor:pointer;">
+      <div style="background:#111;aspect-ratio:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;position:relative;overflow:hidden;">
+        <!-- animated scan area -->
+        <div style="position:relative;width:200px;height:200px;">
+          <div class="sfc sfc-tl"></div><div class="sfc sfc-tr"></div>
+          <div class="sfc sfc-bl"></div><div class="sfc sfc-br"></div>
+          <div class="sc-line"></div>
+          <!-- barcode icon center -->
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" opacity="0.5">
+              <rect x="4" y="8" width="4" height="48" fill="#CC0000"/>
+              <rect x="10" y="8" width="2" height="48" fill="#CC0000"/>
+              <rect x="14" y="8" width="6" height="48" fill="#CC0000"/>
+              <rect x="22" y="8" width="2" height="48" fill="#CC0000"/>
+              <rect x="26" y="8" width="4" height="48" fill="#CC0000"/>
+              <rect x="32" y="8" width="2" height="48" fill="#CC0000"/>
+              <rect x="36" y="8" width="6" height="48" fill="#CC0000"/>
+              <rect x="44" y="8" width="2" height="48" fill="#CC0000"/>
+              <rect x="48" y="8" width="4" height="48" fill="#CC0000"/>
+              <rect x="54" y="8" width="6" height="48" fill="#CC0000"/>
+            </svg>
           </div>
+        </div>
+        <div style="color:rgba(255,255,255,0.5);font-size:13px;font-family:var(--sans);text-align:center;padding:0 20px;">
+          Press trigger button to scan
+        </div>
+        <!-- focus status indicator -->
+        <div id="focus-status" style="position:absolute;top:12px;right:12px;font-size:11px;font-family:var(--mono);padding:4px 8px;border-radius:4px;background:rgba(34,122,60,0.3);color:#22d47a;border:1px solid rgba(34,122,60,0.4);">
+          READY
         </div>
       </div>
       <div class="sc-foot">
         <div class="sc-dot"></div>
-        <div class="sc-stat">Camera ready — or use hardware trigger button</div>
+        <div class="sc-stat" id="sc-stat-txt">Hardware scanner ready — tap screen if not responding</div>
       </div>
     </div>
     <div class="man-row">
@@ -343,7 +363,7 @@ function doLogin(){
   S.user=id;S.branch=br;S.sid=Date.now();
   document.getElementById('hinfo').textContent=id+' · '+br;
   document.getElementById('sum-branch').textContent='Branch '+br;
-  go('ss');initCam();initUrovoScanner();updatePB();
+  go('ss');initUrovoScanner();updatePB();
 }
 function showErr(m){const e=document.getElementById('lerr');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3000);}
 function doLogout(){
@@ -355,63 +375,113 @@ function doLogout(){
 // ── CAMERA ──────────────────────────────
 
 // ── UROVO HARDWARE SCANNER ───────────────────────────────────
-// Urovo DT50 ส่งผลเป็น keystroke + Enter อัตโนมัติ
-// เราใช้ hidden input รับค่า แล้ว process ทันที
-
 let urovoBuffer = '';
-let urovoTimer = null;
-const UROVO_TIMEOUT = 100; // ms ระหว่าง keystrokes ของ scanner
+let urovoTimer  = null;
+const SCAN_TIMEOUT = 80;
+
+function focusScanner() {
+  const inp = document.getElementById('urovo-input');
+  if (inp) {
+    inp.focus();
+    updateFocusStatus(true);
+  }
+}
+
+function updateFocusStatus(focused) {
+  const el = document.getElementById('focus-status');
+  const st = document.getElementById('sc-stat-txt');
+  if (!el) return;
+  if (focused) {
+    el.style.background = 'rgba(34,122,60,0.3)';
+    el.style.color = '#22d47a';
+    el.style.borderColor = 'rgba(34,122,60,0.4)';
+    el.textContent = 'READY';
+    if (st) st.textContent = 'Hardware scanner ready — press trigger to scan';
+  } else {
+    el.style.background = 'rgba(245,166,35,0.2)';
+    el.style.color = '#f5a623';
+    el.style.borderColor = 'rgba(245,166,35,0.3)';
+    el.textContent = 'TAP TO FOCUS';
+    if (st) st.textContent = 'Tap the screen to activate scanner';
+  }
+}
+
+function processScan(code) {
+  code = code.trim();
+  if (!code || S.cd) return;
+  S.cd = true;
+  setTimeout(() => S.cd = false, 2500);
+  scan(code);
+}
 
 function initUrovoScanner() {
   const inp = document.getElementById('urovo-input');
   if (!inp) return;
 
-  // focus hidden input ตลอดเวลาเมื่ออยู่หน้า scanner
+  // Focus immediately
   inp.focus();
 
-  // re-focus เมื่อ click ที่อื่น
-  document.addEventListener('click', (e) => {
-    if (e.target.id !== 'mc' && e.target.id !== 'urovo-input' &&
-        !e.target.closest('.fi') && !e.target.closest('.field')) {
-      setTimeout(() => inp.focus(), 100);
+  // Track focus state
+  inp.addEventListener('focus', () => updateFocusStatus(true));
+  inp.addEventListener('blur',  () => {
+    // refocus unless user clicked a form field
+    setTimeout(() => {
+      const active = document.activeElement;
+      const isForm = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+      if (!isForm) {
+        inp.focus();
+        updateFocusStatus(true);
+      } else {
+        updateFocusStatus(false);
+      }
+    }, 200);
+  });
+
+  // Refocus on any tap outside form fields
+  document.addEventListener('touchend', (e) => {
+    const t = e.target;
+    const isForm = t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'BUTTON';
+    if (!isForm) {
+      setTimeout(() => { inp.focus(); updateFocusStatus(true); }, 50);
     }
   });
 
-  // รับ input จาก hardware scanner
+  // Method 1: input event (character by character)
   inp.addEventListener('input', () => {
     urovoBuffer += inp.value;
     inp.value = '';
-
-    // reset timer ทุกครั้งที่ได้ character ใหม่
     clearTimeout(urovoTimer);
     urovoTimer = setTimeout(() => {
       if (urovoBuffer.trim()) {
-        const code = urovoBuffer.trim();
+        const code = urovoBuffer;
         urovoBuffer = '';
-        if (!S.cd) {
-          S.cd = true;
-          setTimeout(() => S.cd = false, 2500);
-          scan(code);
-        }
+        processScan(code);
       }
-    }, UROVO_TIMEOUT);
+    }, SCAN_TIMEOUT);
   });
 
-  // รับ Enter key (Urovo ส่ง Enter หลังสแกนเสร็จ)
+  // Method 2: keydown Enter (Urovo sends Enter after barcode)
   inp.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-      clearTimeout(urovoTimer);
-      const code = urovoBuffer.trim();
-      urovoBuffer = '';
-      inp.value = '';
-      if (code && !S.cd) {
-        S.cd = true;
-        setTimeout(() => S.cd = false, 2500);
-        scan(code);
-      }
       e.preventDefault();
+      clearTimeout(urovoTimer);
+      // also grab any pending value
+      urovoBuffer += inp.value;
+      inp.value = '';
+      const code = urovoBuffer;
+      urovoBuffer = '';
+      if (code.trim()) processScan(code);
     }
   });
+
+  // Keepalive: refocus every 3s if no form is active
+  setInterval(() => {
+    const active = document.activeElement;
+    const isForm = active && (active.tagName === 'INPUT' && active.id !== 'urovo-input' || active.tagName === 'TEXTAREA');
+    if (!isForm && document.getElementById('ss')?.classList.contains('active')) {
+      inp.focus();
+    }
+  }, 3000);
 }
 
 function initCam(){
