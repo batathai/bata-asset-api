@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Bata Asset Audit</title>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&family=DM+Mono:wght@400;500&display=swap');
+:root {
+  --red:#CC0000;--red-d:#A30000;--red-l:#fff0f0;--red-bd:#ffcccc;
+  --white:#ffffff;--offwhite:#f7f5f2;--bg:#f2f0ed;
+  --gray1:#1a1a1a;--gray2:#444;--gray3:#888;--gray4:#bbb;--gray5:#e8e5e0;
+  --border:#ddd9d3;
+  --green:#1a7a3c;--green-bg:#f0faf3;--green-bd:#a8ddb8;
+  --amber:#b85c00;--amber-bg:#fff8f0;--amber-bd:#ffd4a0;
+  --mono:'DM Mono',monospace;--sans:'Barlow',sans-serif;--cond:'Barlow Condensed',sans-serif;
+  --r:12px;--rs:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:100vh;max-width:430px;margin:0 auto;font-size:15px;}
+.screen{display:none;flex-direction:column;min-height:100vh;}
+.screen.active{display:flex;}
+
+/* ── LOGIN ── */
+#sl{background:var(--white);position:relative;overflow:hidden;}
+.login-hero{background:var(--red);padding:48px 28px 36px;position:relative;overflow:hidden;}
+.login-hero::before{content:'';position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.08);}
+.login-hero::after{content:'';position:absolute;right:30px;bottom:-80px;width:160px;height:160px;border-radius:50%;background:rgba(0,0,0,.08);}
+.bata-logo{display:flex;align-items:center;gap:12px;margin-bottom:28px;position:relative;z-index:1;}
+.bata-b{width:44px;height:44px;background:var(--white);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--cond);font-size:26px;font-weight:700;color:var(--red);letter-spacing:-1px;}
+.bata-name{font-family:var(--cond);font-size:22px;font-weight:700;color:var(--white);letter-spacing:1px;}
+.bata-name span{display:block;font-size:12px;font-weight:400;opacity:.75;letter-spacing:2px;margin-top:-2px;}
+.login-title{font-family:var(--cond);font-size:32px;font-weight:700;color:var(--white);line-height:1.1;position:relative;z-index:1;}
+.login-sub{color:rgba(255,255,255,.7);font-size:13px;margin-top:6px;position:relative;z-index:1;}
+.login-form{padding:32px 28px;}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:18px;}
+.field label{font-size:11px;font-weight:600;color:var(--gray3);letter-spacing:.8px;text-transform:uppercase;}
+.field input{background:var(--offwhite);border:1.5px solid var(--border);border-radius:var(--rs);padding:12px 14px;color:var(--gray1);font-family:var(--sans);font-size:15px;outline:none;transition:border-color .2s,background .2s;}
+.field input:focus{border-color:var(--red);background:var(--white);}
+.field input::placeholder{color:var(--gray4);}
+.btn-login{width:100%;padding:14px;background:var(--red);color:var(--white);border:none;border-radius:var(--rs);font-family:var(--cond);font-size:17px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:background .15s,transform .1s;margin-top:4px;}
+.btn-login:active{background:var(--red-d);transform:scale(.98);}
+.err{background:var(--red-l);border:1.5px solid var(--red-bd);border-radius:var(--rs);padding:10px 14px;font-size:13px;color:var(--red);margin-top:12px;display:none;}
+.err.show{display:block;}
+
+/* ── HEADER ── */
+.hdr{background:var(--red);display:flex;align-items:center;justify-content:space-between;padding:12px 16px;position:sticky;top:0;z-index:50;}
+.hdr-logo{display:flex;align-items:center;gap:8px;}
+.hdr-b{width:30px;height:30px;background:var(--white);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--cond);font-size:16px;font-weight:700;color:var(--red);}
+.hdr-name{font-family:var(--cond);font-size:16px;font-weight:700;color:var(--white);letter-spacing:.5px;}
+.hdr-r{display:flex;align-items:center;gap:8px;}
+.hdr-info{font-size:11px;color:rgba(255,255,255,.75);font-family:var(--mono);text-align:right;}
+.out-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:5px 10px;font-size:12px;color:var(--white);cursor:pointer;font-family:var(--sans);font-weight:500;}
+
+/* ── PROGRESS ── */
+.prog{background:var(--red-d);padding:8px 16px;display:flex;align-items:center;gap:12px;}
+.pb-bg{flex:1;height:5px;background:rgba(255,255,255,.2);border-radius:99px;overflow:hidden;}
+.pb-fill{height:100%;background:var(--white);border-radius:99px;transition:width .4s;}
+.pb-pct{font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.9);font-weight:500;min-width:32px;text-align:right;}
+.pb-cnt{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.6);white-space:nowrap;}
+
+/* ── MAIN ── */
+.main{flex:1;padding:14px;display:flex;flex-direction:column;gap:12px;background:var(--bg);}
+
+/* ── SCANNER ── */
+.sc-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.sc-vp{position:relative;width:100%;aspect-ratio:1;background:#111;}
+#qr-reader{width:100%!important;}
+#qr-reader video{width:100%!important;height:100%!important;object-fit:cover;}
+#qr-reader img,#qr-reader__dashboard,#qr-reader__status_span{display:none!important;}
+#qr-reader__scan_region{border:none!important;}
+.sc-ov{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center;}
+.sc-frame{width:200px;height:200px;position:relative;}
+.sfc{position:absolute;width:24px;height:24px;border-color:var(--red);border-style:solid;}
+.sfc-tl{top:0;left:0;border-width:3px 0 0 3px;border-radius:4px 0 0 0;}
+.sfc-tr{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 4px 0 0;}
+.sfc-bl{bottom:0;left:0;border-width:0 0 3px 3px;border-radius:0 0 0 4px;}
+.sfc-br{bottom:0;right:0;border-width:0 3px 3px 0;border-radius:0 0 4px 0;}
+.sc-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--red),transparent);animation:scanline 2s ease-in-out infinite;}
+@keyframes scanline{0%{top:8px;opacity:0}10%{opacity:.9}90%{opacity:.9}100%{top:192px;opacity:0}}
+.sc-foot{padding:10px 16px;display:flex;align-items:center;gap:8px;border-top:1.5px solid var(--border);background:var(--offwhite);}
+.sc-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite;flex-shrink:0;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.sc-stat{font-size:12px;color:var(--gray3);}
+
+/* ── MANUAL ── */
+.man-row{display:flex;gap:8px;}
+.man-row input{flex:1;background:var(--white);border:1.5px solid var(--border);border-radius:var(--rs);padding:11px 14px;color:var(--gray1);font-family:var(--mono);font-size:13px;outline:none;transition:border-color .2s;}
+.man-row input:focus{border-color:var(--red);}
+.man-row input::placeholder{color:var(--gray4);font-family:var(--sans);font-size:13px;}
+.btn-s{background:var(--red);border:none;border-radius:var(--rs);padding:11px 18px;color:var(--white);font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:.3px;cursor:pointer;}
+
+/* ── RESULT CARDS ── */
+.rc{border-radius:var(--r);border:1.5px solid;overflow:hidden;animation:su .2s ease;background:var(--white);}
+@keyframes su{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+.rc.matched{border-color:var(--green-bd);}
+.rc.unmatched{border-color:var(--amber-bd);}
+.rc.mismatch{border-color:var(--red-bd);}
+.rc.dup{border-color:var(--border);}
+.rc-hdr{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1.5px solid;}
+.matched .rc-hdr{background:var(--green-bg);border-color:var(--green-bd);}
+.unmatched .rc-hdr{background:var(--amber-bg);border-color:var(--amber-bd);}
+.mismatch .rc-hdr{background:var(--red-l);border-color:var(--red-bd);}
+.dup .rc-hdr{background:var(--offwhite);border-color:var(--border);}
+.rc-ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;font-weight:700;}
+.matched .rc-ico{background:var(--green-bd);color:var(--green);}
+.unmatched .rc-ico{background:var(--amber-bd);color:var(--amber);}
+.mismatch .rc-ico{background:var(--red-bd);color:var(--red);}
+.dup .rc-ico{background:var(--border);color:var(--gray3);}
+.rc-lbl{font-size:11px;color:var(--gray3);margin-bottom:2px;font-weight:500;}
+.rc-txt{font-size:15px;font-weight:700;font-family:var(--cond);letter-spacing:.3px;}
+.matched .rc-txt{color:var(--green);}
+.unmatched .rc-txt{color:var(--amber);}
+.mismatch .rc-txt{color:var(--red);}
+.dup .rc-txt{color:var(--gray3);}
+.rc-body{padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+.ir{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;font-size:13px;}
+.il{color:var(--gray3);flex-shrink:0;font-weight:500;}
+.iv{color:var(--gray1);text-align:right;font-family:var(--mono);font-size:12px;word-break:break-all;}
+.iv.ac{color:var(--red);font-weight:500;}
+.dv{height:1.5px;background:var(--border);}
+.fg{display:flex;flex-direction:column;gap:5px;}
+.fl{font-size:11px;color:var(--gray3);font-weight:600;letter-spacing:.5px;text-transform:uppercase;}
+.fi{background:var(--offwhite);border:1.5px solid var(--border);border-radius:var(--rs);padding:9px 12px;color:var(--gray1);font-family:var(--sans);font-size:13px;outline:none;width:100%;transition:border-color .2s;}
+.fi:focus{border-color:var(--red);}
+.fi::placeholder{color:var(--gray4);}
+.br{display:flex;gap:8px;}
+.btn-g{flex:1;padding:10px;background:var(--offwhite);border:1.5px solid var(--border);border-radius:var(--rs);color:var(--gray2);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;}
+.btn-c{flex:1;padding:10px;background:var(--red);border:none;border-radius:var(--rs);color:var(--white);font-family:var(--cond);font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.3px;}
+.btn-d{flex:1;padding:10px;background:var(--red-l);border:1.5px solid var(--red-bd);border-radius:var(--rs);color:var(--red);font-family:var(--cond);font-size:14px;font-weight:700;cursor:pointer;}
+.btn-save{width:100%;padding:12px;background:var(--red);border:none;border-radius:var(--rs);color:var(--white);font-family:var(--cond);font-size:15px;font-weight:700;letter-spacing:.3px;cursor:pointer;}
+
+/* ── PHOTO ── */
+.ph-area{border:2px dashed var(--border);border-radius:var(--rs);padding:20px;text-align:center;cursor:pointer;transition:border-color .2s;position:relative;}
+.ph-area:hover{border-color:var(--red);}
+.ph-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.ph-ico{font-size:28px;margin-bottom:6px;}
+.ph-txt{font-size:12px;color:var(--gray3);}
+.ph-prev{width:100%;height:120px;object-fit:cover;border-radius:var(--rs);display:none;}
+
+/* ── SCAN LIST ── */
+.sec-t{font-size:11px;font-weight:700;color:var(--gray4);letter-spacing:1.5px;text-transform:uppercase;padding:0 2px;}
+.slist{display:flex;flex-direction:column;gap:6px;}
+.si{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--rs);}
+.sd{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sd-m{background:var(--green);}
+.sd-u{background:var(--amber);}
+.sd-x{background:var(--red);}
+.scode{font-family:var(--mono);font-size:11px;color:var(--gray3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sname{color:var(--gray1);flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;}
+.stime{font-family:var(--mono);font-size:11px;color:var(--gray4);flex-shrink:0;}
+
+/* ── NAV ── */
+.nav{background:var(--white);border-top:1.5px solid var(--border);display:flex;padding:8px 0 24px;position:sticky;bottom:0;}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px;background:none;border:none;color:var(--gray4);font-size:10px;font-family:var(--sans);font-weight:600;letter-spacing:.3px;text-transform:uppercase;cursor:pointer;transition:color .15s;}
+.nb.act{color:var(--red);}
+.nb svg{width:20px;height:20px;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray1);color:var(--white);border-radius:20px;padding:9px 18px;font-size:13px;font-weight:500;z-index:200;opacity:0;transition:all .25s;white-space:nowrap;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── LOG / SUMMARY SCREEN ── */
+.back-hdr{background:var(--red);display:flex;align-items:center;justify-content:space-between;padding:12px 16px;position:sticky;top:0;z-index:50;}
+.back-title{font-family:var(--cond);font-size:18px;font-weight:700;color:var(--white);letter-spacing:.5px;}
+.back-sub{font-size:11px;color:rgba(255,255,255,.7);}
+.stat-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:14px 16px;}
+.stat-label{font-size:11px;font-weight:600;color:var(--gray3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px;}
+.stat-val{font-size:26px;font-weight:700;font-family:var(--cond);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="screen active" id="sl">
+  <div class="login-hero">
+    <div class="bata-logo">
+      <div class="bata-b">B</div>
+      <div class="bata-name">BATA<span>THAILAND</span></div>
+    </div>
+    <div class="login-title">Fixed Asset<br>Audit System</div>
+    <div class="login-sub">Scan & verify branch assets</div>
+  </div>
+  <div class="login-form">
+    <div class="field">
+      <label>Employee ID</label>
+      <input type="text" id="li" placeholder="e.g. EMP001" autocomplete="username"/>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="lp" placeholder="••••••••" autocomplete="current-password"/>
+    </div>
+    <div class="field">
+      <label>Branch Code</label>
+      <input type="text" id="lb" placeholder="e.g. 0054011"/>
+    </div>
+    <button class="btn-login" onclick="doLogin()">SIGN IN</button>
+    <div class="err" id="lerr">Please fill in all fields</div>
+  </div>
+</div>
+
+<!-- SCANNER -->
+<div class="screen" id="ss">
+  <div class="hdr">
+    <div class="hdr-logo">
+      <div class="hdr-b">B</div>
+      <div class="hdr-name">BATA AUDIT</div>
+    </div>
+    <div class="hdr-r">
+      <div class="hdr-info" id="hinfo">—</div>
+      <button class="out-btn" onclick="doLogout()">Sign out</button>
+    </div>
+  </div>
+  <div class="prog">
+    <div class="pb-bg"><div class="pb-fill" id="pb" style="width:0%"></div></div>
+    <div class="pb-pct" id="pb-pct">0%</div>
+    <div class="pb-cnt" id="pb-cnt">0 / 0</div>
+  </div>
+  <div class="main">
+    <div class="sc-card">
+      <div class="sc-vp">
+        <div id="qr-reader"></div>
+        <div class="sc-ov">
+          <div class="sc-frame">
+            <div class="sfc sfc-tl"></div><div class="sfc sfc-tr"></div>
+            <div class="sfc sfc-bl"></div><div class="sfc sfc-br"></div>
+            <div class="sc-line"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sc-foot">
+        <div class="sc-dot"></div>
+        <div class="sc-stat">Camera ready — point at QR code on asset label</div>
+      </div>
+    </div>
+    <div class="man-row">
+      <input id="mc" placeholder="Type asset code or serial no." />
+      <button class="btn-s" onclick="handleManual()">SEARCH</button>
+    </div>
+    <div id="ra" style="display:none"></div>
+    <div class="sec-t">Recent Scans</div>
+    <div class="slist" id="sl-list">
+      <div style="text-align:center;padding:24px;color:var(--gray4);font-size:13px;">No scans yet — start scanning assets</div>
+    </div>
+    <div style="height:16px"></div>
+  </div>
+  <div class="nav">
+    <button class="nb act" id="nb-scan">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Scan
+    </button>
+    <button class="nb" onclick="showLog()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+      Log
+    </button>
+    <button class="nb" onclick="showSum()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 4-4"/></svg>
+      Summary
+    </button>
+  </div>
+</div>
+
+<!-- LOG -->
+<div class="screen" id="slog">
+  <div class="back-hdr">
+    <div><div class="back-title">Scan Log</div><div class="back-sub" id="log-cnt">0 items</div></div>
+    <button class="out-btn" onclick="go('ss')">← Back</button>
+  </div>
+  <div class="main" id="log-body"></div>
+</div>
+
+<!-- SUMMARY -->
+<div class="screen" id="ssum">
+  <div class="back-hdr">
+    <div><div class="back-title">Session Summary</div><div class="back-sub" id="sum-branch">—</div></div>
+    <button class="out-btn" onclick="go('ss')">← Back</button>
+  </div>
+  <div class="main">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="sum-stats"></div>
+    <div class="sec-t">Session Info</div>
+    <div id="sum-info"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────
+const API = 'YOUR_API_URL'; // replace with your backend URL
+
+// ── MOCK DATA ────────────────────────────
+const DB = {
+  'COM012022010002SEQ001':{name:'Scanner USB CS-6600 2D',cat:'Equipment',serial:'KK23003062',date:'2022-01-01'},
+  'COM012022010003SEQ001':{name:'Scanner USB CS-6600 2D',cat:'Equipment',serial:'KK23003220',date:'2022-01-01'},
+  'COM012022010003SEQ002':{name:'Scanner USB CS-6600 2D',cat:'Equipment',serial:'KK23003556',date:'2022-01-01'},
+  'COM012022010005SEQ001':{name:'Notebook Lenovo ThinkBook 14 G2',cat:'Computer',serial:'MP23RQEV',date:'2022-01-01'},
+  'COM012020020005SEQ001':{name:'Dell NB Inspiron 5490-GD-W',cat:'Computer',serial:'4XXFRT2',date:'2020-02-01'},
+  'COM012020020006SEQ001':{name:'Dell NB Inspiron 3493-SL-W',cat:'Computer',serial:'5KVD803',date:'2020-02-01'},
+  'COM012022010004SEQ001':{name:'Cash Drawer EC-410',cat:'Equipment',serial:'EC410202104090582',date:'2022-01-01'},
+  'COM012022010001SEQ001':{name:'Epson T82X POS Printer USB',cat:'Equipment',serial:null,date:'2022-01-01'},
+};
+
+// ── STATE ────────────────────────────────
+let S={user:null,branch:null,sid:null,scanned:new Set(),log:[],total:Object.keys(DB).length,scanner:null,cd:false};
+
+// ── LOGIN ────────────────────────────────
+function doLogin(){
+  const id=document.getElementById('li').value.trim();
+  const pw=document.getElementById('lp').value;
+  const br=document.getElementById('lb').value.trim();
+  if(!id||!pw||!br){showErr('Please fill in all fields');return;}
+  S.user=id;S.branch=br;S.sid=Date.now();
+  document.getElementById('hinfo').textContent=id+' · '+br;
+  document.getElementById('sum-branch').textContent='Branch '+br;
+  go('ss');initCam();updatePB();
+}
+function showErr(m){const e=document.getElementById('lerr');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3000);}
+function doLogout(){
+  if(S.scanner){S.scanner.stop().catch(()=>{});S.scanner=null;}
+  S={...S,user:null,branch:null,scanned:new Set(),log:[],scanner:null,cd:false};
+  go('sl');
+}
+
+// ── CAMERA ──────────────────────────────
+function initCam(){
+  if(S.scanner)return;
+  S.scanner=new Html5Qrcode('qr-reader');
+  S.scanner.start(
+    {facingMode:'environment'},{fps:10,qrbox:{width:200,height:200}},
+    (txt)=>{if(S.cd)return;S.cd=true;setTimeout(()=>S.cd=false,2500);scan(txt.trim());},
+    ()=>{}
+  ).catch(()=>{
+    document.querySelector('.sc-vp').innerHTML='<div style="padding:40px;text-align:center;color:#888;font-size:13px;">Camera unavailable<br><br>Use the search box below</div>';
+  });
+}
+
+// ── SCAN ────────────────────────────────
+function scan(raw){
+  const key=raw.replace(/\s/g,'');
+  const area=document.getElementById('ra');
+  area.style.display='block';
+  if(S.scanned.has(key)){area.innerHTML=rDup(key);toast('Already scanned this session');area.scrollIntoView({behavior:'smooth',block:'nearest'});return;}
+  const asset=DB[key];
+  if(asset){
+    if(asset.cat==='Computer')area.innerHTML=rSerial(key,asset);
+    else{area.innerHTML=rMatch(key,asset);commit(key,asset.name,'matched');}
+  }else{area.innerHTML=rUnmatch(key);toast('Not found — log as unmatched');}
+  area.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function handleManual(){const v=document.getElementById('mc').value.trim();if(!v)return;scan(v);document.getElementById('mc').value='';}
+document.addEventListener('keypress',e=>{if(e.key==='Enter'&&document.activeElement.id==='mc')handleManual();});
+
+// ── RENDER ───────────────────────────────
+function rMatch(k,a){return`
+<div class="rc matched">
+  <div class="rc-hdr"><div class="rc-ico">✓</div><div><div class="rc-lbl">Asset found in system</div><div class="rc-txt">VERIFIED</div></div></div>
+  <div class="rc-body">
+    <div class="ir"><span class="il">QR Key</span><span class="iv ac">${k}</span></div>
+    <div class="ir"><span class="il">Name</span><span class="iv">${a.name}</span></div>
+    <div class="ir"><span class="il">Category</span><span class="iv">${a.cat}</span></div>
+    <div class="ir"><span class="il">Purchase date</span><span class="iv">${a.date}</span></div>
+    ${a.serial?`<div class="ir"><span class="il">Serial no.</span><span class="iv">${a.serial}</span></div>`:''}
+    <div class="dv"></div>
+    <div class="fg"><div class="fl">Remark (optional)</div><input class="fi" id="rm-${k}" placeholder="e.g. damaged label, moved location..."/></div>
+    <button class="btn-save" onclick="saveRemark('${k}','${a.name}')">SAVE & NEXT</button>
+  </div>
+</div>`;}
+
+function rSerial(k,a){return`
+<div class="rc mismatch">
+  <div class="rc-hdr"><div class="rc-ico">!</div><div><div class="rc-lbl">Computer — verify serial no.</div><div class="rc-txt">SERIAL CHECK REQUIRED</div></div></div>
+  <div class="rc-body">
+    <div class="ir"><span class="il">QR Key</span><span class="iv ac">${k}</span></div>
+    <div class="ir"><span class="il">Name</span><span class="iv">${a.name}</span></div>
+    <div class="ir"><span class="il">Serial (master)</span><span class="iv">${a.serial||'—'}</span></div>
+    <div class="dv"></div>
+    <div class="fg"><div class="fl">Serial no. on device</div><input class="fi" id="sr-${k}" placeholder="${a.serial||'Enter serial no.'}"/></div>
+    <div class="fg"><div class="fl">Remark (optional)</div><input class="fi" id="rm-${k}" placeholder="Any notes..."/></div>
+    <div class="br">
+      <button class="btn-g" onclick="doSerial('${k}','${a.name}','${a.serial}',true)">Serial matches ✓</button>
+      <button class="btn-d" onclick="doSerial('${k}','${a.name}','${a.serial}',false)">Mismatch — Flag</button>
+    </div>
+  </div>
+</div>`;}
+
+function rUnmatch(k){return`
+<div class="rc unmatched">
+  <div class="rc-hdr"><div class="rc-ico">?</div><div><div class="rc-lbl">Not found in system</div><div class="rc-txt">LOG AS UNMATCHED</div></div></div>
+  <div class="rc-body">
+    <div class="ir"><span class="il">Scanned code</span><span class="iv ac">${k}</span></div>
+    <div class="dv"></div>
+    <div class="fg"><div class="fl">Serial no. (from device)</div><input class="fi" id="us-${k}" placeholder="e.g. 7TK4B63"/></div>
+    <div class="fg"><div class="fl">Device description</div><input class="fi" id="un-${k}" placeholder="e.g. Dell Monitor 24 inch"/></div>
+    <div class="fg">
+      <div class="fl">Photo (no QR / damaged label)</div>
+      <div class="ph-area">
+        <input type="file" accept="image/*" capture="environment" onchange="prevPhoto(this,'${k}')">
+        <img id="pv-${k}" class="ph-prev">
+        <div id="pp-${k}"><div class="ph-ico">📷</div><div class="ph-txt">Tap to take photo</div></div>
+      </div>
+    </div>
+    <div class="fg"><div class="fl">Remark</div><input class="fi" id="ur-${k}" placeholder="Notes for HQ review..."/></div>
+    <div class="br">
+      <button class="btn-g" onclick="hideR()">Skip</button>
+      <button class="btn-c" onclick="doUnmatch('${k}')">SEND TO HQ</button>
+    </div>
+  </div>
+</div>`;}
+
+function rDup(k){return`
+<div class="rc dup">
+  <div class="rc-hdr"><div class="rc-ico">↺</div><div><div class="rc-lbl">Already scanned this session</div><div class="rc-txt">DUPLICATE</div></div></div>
+  <div class="rc-body"><div class="ir"><span class="il">Code</span><span class="iv">${k}</span></div></div>
+</div>`;}
+
+// ── ACTIONS ──────────────────────────────
+function saveRemark(k,n){commit(k,n,'matched',{remark:document.getElementById('rm-'+k)?.value||''});hideR();}
+function doSerial(k,n,exp,match){
+  const found=document.getElementById('sr-'+k)?.value||'';
+  const remark=document.getElementById('rm-'+k)?.value||'';
+  commit(k,n,match?'matched':'mismatch',{serial_found:found,serial_match:match,remark});
+  toast(match?'Serial verified ✓':'Serial mismatch — flagged to HQ');hideR();
+}
+function doUnmatch(k){
+  const n=document.getElementById('un-'+k)?.value||'Unknown device';
+  const s=document.getElementById('us-'+k)?.value||'';
+  const r=document.getElementById('ur-'+k)?.value||'';
+  commit(k,n,'unmatched',{serial_no:s,remark:r});
+  toast('Sent to HQ for review');hideR();
+}
+function hideR(){document.getElementById('ra').style.display='none';}
+function prevPhoto(inp,k){
+  if(!inp.files[0])return;
+  const fr=new FileReader();
+  fr.onload=e=>{
+    const img=document.getElementById('pv-'+k);
+    const ph=document.getElementById('pp-'+k);
+    img.src=e.target.result;img.style.display='block';
+    if(ph)ph.style.display='none';
+  };
+  fr.readAsDataURL(inp.files[0]);
+}
+function commit(k,n,type,extra={}){
+  S.scanned.add(k);
+  const now=new Date();
+  const t=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  S.log.unshift({k,n,type,t,...extra});
+  updatePB();renderList();
+}
+
+// ── PROGRESS & LIST ──────────────────────
+function updatePB(){
+  const c=S.scanned.size,tot=S.total,pct=tot?Math.round(c/tot*100):0;
+  document.getElementById('pb').style.width=pct+'%';
+  document.getElementById('pb-pct').textContent=pct+'%';
+  document.getElementById('pb-cnt').textContent=c+' / '+tot;
+}
+function renderList(){
+  const el=document.getElementById('sl-list');
+  if(!S.log.length){el.innerHTML='<div style="text-align:center;padding:24px;color:var(--gray4);font-size:13px;">No scans yet</div>';return;}
+  el.innerHTML=S.log.slice(0,8).map(s=>`
+    <div class="si">
+      <div class="sd ${s.type==='matched'?'sd-m':s.type==='unmatched'?'sd-u':'sd-x'}"></div>
+      <div class="scode">${s.k.substring(0,16)}</div>
+      <div class="sname">${s.n}</div>
+      <div class="stime">${s.t}</div>
+    </div>`).join('');
+}
+
+// ── SCREENS ──────────────────────────────
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function showLog(){
+  document.getElementById('log-cnt').textContent=S.log.length+' items';
+  document.getElementById('log-body').innerHTML=S.log.length
+    ?S.log.map(s=>`
+      <div class="si" style="padding:12px 14px;flex-wrap:wrap;gap:6px;align-items:flex-start;">
+        <div class="sd ${s.type==='matched'?'sd-m':s.type==='unmatched'?'sd-u':'sd-x'}" style="margin-top:4px;"></div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-family:var(--mono);color:var(--gray3);">${s.k}</div>
+          <div style="font-size:13px;font-weight:500;margin-top:2px;">${s.n}</div>
+          ${s.remark?`<div style="font-size:11px;color:var(--gray3);margin-top:2px;">Note: ${s.remark}</div>`:''}
+          ${s.serial_found?`<div style="font-size:11px;color:var(--gray3);margin-top:2px;">Serial found: ${s.serial_found}</div>`:''}
+        </div>
+        <div style="font-size:11px;color:var(--gray4);font-family:var(--mono);">${s.t}</div>
+      </div>`).join('')
+    :'<div style="text-align:center;padding:40px;color:var(--gray4);font-size:13px;">No scans yet</div>';
+  go('slog');
+}
+
+function showSum(){
+  const matched=S.log.filter(s=>s.type==='matched').length;
+  const mism=S.log.filter(s=>s.type==='mismatch').length;
+  const unm=S.log.filter(s=>s.type==='unmatched').length;
+  const tot=S.scanned.size;
+  const pend=Math.max(0,S.total-tot);
+  const pct=S.total?Math.round(tot/S.total*100):0;
+  document.getElementById('sum-stats').innerHTML=
+    sc('Scanned',tot,'var(--red)')+sc('Verified',matched,'var(--green)')+
+    sc('Flagged',mism,'var(--red)')+sc('Unmatched',unm,'var(--amber)')+
+    sc('Pending',pend,'var(--gray3)')+sc('Total Assets',S.total,'var(--gray3)');
+  document.getElementById('sum-info').innerHTML=`
+    <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:16px;font-size:13px;color:var(--gray3);line-height:2.2;">
+      <div>Branch: <span style="color:var(--gray1);font-weight:500;">${S.branch}</span></div>
+      <div>Auditor: <span style="color:var(--gray1);font-weight:500;">${S.user}</span></div>
+      <div>Progress: <span style="color:var(--red);font-weight:700;font-family:var(--cond);font-size:15px;">${pct}%</span></div>
+      <div style="margin-top:10px;padding:10px 14px;border-radius:var(--rs);font-weight:600;font-family:var(--cond);font-size:14px;letter-spacing:.3px;${pend>0?'background:var(--amber-bg);color:var(--amber);border:1.5px solid var(--amber-bd);':'background:var(--green-bg);color:var(--green);border:1.5px solid var(--green-bd);'}">
+        ${pend>0?'⚠ '+pend+' ASSET(S) NOT YET SCANNED':'✓ ALL ASSETS SCANNED'}
+      </div>
+    </div>`;
+  go('ssum');
+}
+function sc(l,v,c){return`<div class="stat-card"><div class="stat-label">${l}</div><div class="stat-val" style="color:${c};">${v}</div></div>`;}
+
+// ── TOAST ────────────────────────────────
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+</script>
+</body>
+</html>
