@@ -23,7 +23,7 @@
 body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:100vh;max-width:430px;margin:0 auto;font-size:15px;}
 .screen{display:none;flex-direction:column;min-height:100vh;}
 .screen.active{display:flex;}
-
+ 
 /* ── LOGIN ── */
 #sl{background:var(--white);position:relative;overflow:hidden;}
 .login-hero{background:var(--red);padding:48px 28px 36px;position:relative;overflow:hidden;}
@@ -45,7 +45,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:
 .btn-login:active{background:var(--red-d);transform:scale(.98);}
 .err{background:var(--red-l);border:1.5px solid var(--red-bd);border-radius:var(--rs);padding:10px 14px;font-size:13px;color:var(--red);margin-top:12px;display:none;}
 .err.show{display:block;}
-
+ 
 /* ── HEADER ── */
 .hdr{background:var(--red);display:flex;align-items:center;justify-content:space-between;padding:12px 16px;position:sticky;top:0;z-index:50;}
 .hdr-logo{display:flex;align-items:center;gap:8px;}
@@ -54,17 +54,17 @@ body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:
 .hdr-r{display:flex;align-items:center;gap:8px;}
 .hdr-info{font-size:11px;color:rgba(255,255,255,.75);font-family:var(--mono);text-align:right;}
 .out-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:5px 10px;font-size:12px;color:var(--white);cursor:pointer;font-family:var(--sans);font-weight:500;}
-
+ 
 /* ── PROGRESS ── */
 .prog{background:var(--red-d);padding:8px 16px;display:flex;align-items:center;gap:12px;}
 .pb-bg{flex:1;height:5px;background:rgba(255,255,255,.2);border-radius:99px;overflow:hidden;}
 .pb-fill{height:100%;background:var(--white);border-radius:99px;transition:width .4s;}
 .pb-pct{font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.9);font-weight:500;min-width:32px;text-align:right;}
 .pb-cnt{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.6);white-space:nowrap;}
-
+ 
 /* ── MAIN ── */
 .main{flex:1;padding:14px;display:flex;flex-direction:column;gap:12px;background:var(--bg);}
-
+ 
 /* ── SCANNER ── */
 .sc-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;}
 .sc-vp{position:relative;width:100%;aspect-ratio:1;background:#111;}
@@ -85,14 +85,14 @@ body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:
 .sc-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite;flex-shrink:0;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
 .sc-stat{font-size:12px;color:var(--gray3);}
-
+ 
 /* ── MANUAL ── */
 .man-row{display:flex;gap:8px;}
 .man-row input{flex:1;background:var(--white);border:1.5px solid var(--border);border-radius:var(--rs);padding:11px 14px;color:var(--gray1);font-family:var(--mono);font-size:13px;outline:none;transition:border-color .2s;}
 .man-row input:focus{border-color:var(--red);}
 .man-row input::placeholder{color:var(--gray4);font-family:var(--sans);font-size:13px;}
 .btn-s{background:var(--red);border:none;border-radius:var(--rs);padding:11px 18px;color:var(--white);font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:.3px;cursor:pointer;}
-
+ 
 /* ── RESULT CARDS ── */
 .rc{border-radius:var(--r);border:1.5px solid;overflow:hidden;animation:su .2s ease;background:var(--white);}
 @keyframes su{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
@@ -132,7 +132,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:
 .btn-c{flex:1;padding:10px;background:var(--red);border:none;border-radius:var(--rs);color:var(--white);font-family:var(--cond);font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.3px;}
 .btn-d{flex:1;padding:10px;background:var(--red-l);border:1.5px solid var(--red-bd);border-radius:var(--rs);color:var(--red);font-family:var(--cond);font-size:14px;font-weight:700;cursor:pointer;}
 .btn-save{width:100%;padding:12px;background:var(--red);border:none;border-radius:var(--rs);color:var(--white);font-family:var(--cond);font-size:15px;font-weight:700;letter-spacing:.3px;cursor:pointer;}
-
+ 
 /* ── PHOTO ── */
 .ph-area{border:2px dashed var(--border);border-radius:var(--rs);padding:20px;text-align:center;cursor:pointer;transition:border-color .2s;position:relative;}
 .ph-area:hover{border-color:var(--red);}
@@ -140,7 +140,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:
 .ph-ico{font-size:28px;margin-bottom:6px;}
 .ph-txt{font-size:12px;color:var(--gray3);}
 .ph-prev{width:100%;height:120px;object-fit:cover;border-radius:var(--rs);display:none;}
-
+ 
 /* ── SCAN LIST ── */
 .sec-t{font-size:11px;font-weight:700;color:var(--gray4);letter-spacing:1.5px;text-transform:uppercase;padding:0 2px;}
 .slist{display:flex;flex-direction:column;gap:6px;}
@@ -152,15 +152,15 @@ body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:
 .scode{font-family:var(--mono);font-size:11px;color:var(--gray3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .sname{color:var(--gray1);flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;}
 .stime{font-family:var(--mono);font-size:11px;color:var(--gray4);flex-shrink:0;}
-
+ 
 /* ── NAV ── */
 .nav{background:var(--white);border-top:1.5px solid var(--border);display:flex;padding:8px 0 24px;position:sticky;bottom:0;}
 .nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px;background:none;border:none;color:var(--gray4);font-size:10px;font-family:var(--sans);font-weight:600;letter-spacing:.3px;text-transform:uppercase;cursor:pointer;transition:color .15s;}
 .nb.act{color:var(--red);}
 .nb svg{width:20px;height:20px;}
-
+ 
 /* ── TOAST ── */
-
+ 
 /* Urovo hardware scanner input */
 #urovo-input {
   position: fixed; top: -100px; left: 0;
@@ -178,10 +178,10 @@ body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:
   width: 8px; height: 8px; border-radius: 50%;
   background: var(--red); animation: blink 1s infinite;
 }
-
+ 
 .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray1);color:var(--white);border-radius:20px;padding:9px 18px;font-size:13px;font-weight:500;z-index:200;opacity:0;transition:all .25s;white-space:nowrap;pointer-events:none;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
+ 
 /* ── LOG / SUMMARY SCREEN ── */
 .back-hdr{background:var(--red);display:flex;align-items:center;justify-content:space-between;padding:12px 16px;position:sticky;top:0;z-index:50;}
 .back-title{font-family:var(--cond);font-size:18px;font-weight:700;color:var(--white);letter-spacing:.5px;}
@@ -192,7 +192,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:
 </style>
 </head>
 <body>
-
+ 
 <!-- LOGIN -->
 <div class="screen active" id="sl">
   <div class="login-hero">
@@ -220,7 +220,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:
     <div class="err" id="lerr">Please fill in all fields</div>
   </div>
 </div>
-
+ 
 <!-- SCANNER -->
 <div class="screen" id="ss">
   <div class="hdr">
@@ -238,7 +238,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:
     <div class="pb-pct" id="pb-pct">0%</div>
     <div class="pb-cnt" id="pb-cnt">0 / 0</div>
   </div>
-
+ 
   <!-- Urovo Hardware Scanner Input -->
   <input id="urovo-input" type="text" inputmode="none" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="" tabindex="-1" readonly>
   <div class="scan-active-indicator">
@@ -246,45 +246,52 @@ body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:
     <span>Hardware scanner ready — press trigger button to scan</span>
   </div>
   <div class="main">
-    <div class="sc-card" onclick="focusScanner()" style="cursor:pointer;">
-      <div style="background:#111;aspect-ratio:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;position:relative;overflow:hidden;">
-        <!-- animated scan area -->
-        <div style="position:relative;width:200px;height:200px;">
-          <div class="sfc sfc-tl"></div><div class="sfc sfc-tr"></div>
-          <div class="sfc sfc-bl"></div><div class="sfc sfc-br"></div>
-          <div class="sc-line"></div>
-          <!-- barcode icon center -->
-          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" opacity="0.5">
-              <rect x="4" y="8" width="4" height="48" fill="#CC0000"/>
-              <rect x="10" y="8" width="2" height="48" fill="#CC0000"/>
-              <rect x="14" y="8" width="6" height="48" fill="#CC0000"/>
-              <rect x="22" y="8" width="2" height="48" fill="#CC0000"/>
-              <rect x="26" y="8" width="4" height="48" fill="#CC0000"/>
-              <rect x="32" y="8" width="2" height="48" fill="#CC0000"/>
-              <rect x="36" y="8" width="6" height="48" fill="#CC0000"/>
-              <rect x="44" y="8" width="2" height="48" fill="#CC0000"/>
-              <rect x="48" y="8" width="4" height="48" fill="#CC0000"/>
-              <rect x="54" y="8" width="6" height="48" fill="#CC0000"/>
-            </svg>
-          </div>
+    <!-- Scanner Input Card -->
+    <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;" onclick="focusScanner()">
+      <!-- Status bar -->
+      <div style="background:var(--red);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="sc-dot"></div>
+          <span style="color:rgba(255,255,255,.9);font-size:13px;font-weight:500;" id="sc-stat-txt">Hardware scanner ready</span>
         </div>
-        <div style="color:rgba(255,255,255,0.5);font-size:13px;font-family:var(--sans);text-align:center;padding:0 20px;">
-          Press trigger button to scan
-        </div>
-        <!-- focus status indicator -->
-        <div id="focus-status" style="position:absolute;top:12px;right:12px;font-size:11px;font-family:var(--mono);padding:4px 8px;border-radius:4px;background:rgba(34,122,60,0.3);color:#22d47a;border:1px solid rgba(34,122,60,0.4);">
+        <div id="focus-status" style="font-size:11px;font-family:var(--mono);padding:3px 10px;border-radius:99px;background:rgba(255,255,255,.2);color:#fff;font-weight:500;">
           READY
         </div>
       </div>
-      <div class="sc-foot">
-        <div class="sc-dot"></div>
-        <div class="sc-stat" id="sc-stat-txt">Hardware scanner ready — tap screen if not responding</div>
+ 
+      <!-- Main input area -->
+      <div style="padding:20px 16px;display:flex;flex-direction:column;gap:10px;">
+        <div style="font-size:12px;font-weight:600;color:var(--gray3);text-transform:uppercase;letter-spacing:.8px;">
+          Scan QR or enter asset code
+        </div>
+        <div style="display:flex;gap:8px;align-items:stretch;">
+          <div style="flex:1;position:relative;">
+            <!-- barcode icon inside input -->
+            <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.3;" width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <rect x="2" y="4" width="2" height="16" fill="currentColor"/>
+              <rect x="5" y="4" width="1" height="16" fill="currentColor"/>
+              <rect x="7" y="4" width="3" height="16" fill="currentColor"/>
+              <rect x="11" y="4" width="1" height="16" fill="currentColor"/>
+              <rect x="13" y="4" width="2" height="16" fill="currentColor"/>
+              <rect x="16" y="4" width="1" height="16" fill="currentColor"/>
+              <rect x="18" y="4" width="3" height="16" fill="currentColor"/>
+            </svg>
+            <input id="mc"
+              style="width:100%;background:var(--offwhite);border:1.5px solid var(--border);border-radius:var(--rs);padding:14px 14px 14px 40px;font-family:var(--mono);font-size:14px;color:var(--gray1);outline:none;transition:border-color .2s;"
+              placeholder="COM012022010001SEQ001"
+              onfocus="this.style.borderColor='var(--red)'"
+              onblur="this.style.borderColor='var(--border)';setTimeout(focusScanner,200)"
+              onkeypress="if(event.key==='Enter')handleManual()"
+            />
+          </div>
+          <button class="btn-s" onclick="handleManual()" style="padding:14px 20px;font-size:14px;">
+            SEARCH
+          </button>
+        </div>
+        <div style="font-size:12px;color:var(--gray3);text-align:center;">
+          Press trigger button — or type code above and tap Search
+        </div>
       </div>
-    </div>
-    <div class="man-row">
-      <input id="mc" placeholder="Type asset code or serial no." />
-      <button class="btn-s" onclick="handleManual()">SEARCH</button>
     </div>
     <div id="ra" style="display:none"></div>
     <div class="sec-t">Recent Scans</div>
@@ -308,7 +315,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:
     </button>
   </div>
 </div>
-
+ 
 <!-- LOG -->
 <div class="screen" id="slog">
   <div class="back-hdr">
@@ -317,7 +324,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:
   </div>
   <div class="main" id="log-body"></div>
 </div>
-
+ 
 <!-- SUMMARY -->
 <div class="screen" id="ssum">
   <div class="back-hdr">
@@ -330,13 +337,13 @@ body{font-family:var(--sans);background:var(--bg);color:var(--gray1);min-height:
     <div id="sum-info"></div>
   </div>
 </div>
-
+ 
 <div class="toast" id="toast"></div>
-
+ 
 <script>
 // ── CONFIG ──────────────────────────────
 const API = 'https://bata-asset-api-production.up.railway.app'; // replace with your backend URL
-
+ 
 // ── MOCK DATA ────────────────────────────
 const DB = {
   'COM012022010002SEQ001':{name:'Scanner USB CS-6600 2D',cat:'Equipment',serial:'KK23003062',date:'2022-01-01'},
@@ -348,10 +355,10 @@ const DB = {
   'COM012022010004SEQ001':{name:'Cash Drawer EC-410',cat:'Equipment',serial:'EC410202104090582',date:'2022-01-01'},
   'COM012022010001SEQ001':{name:'Epson T82X POS Printer USB',cat:'Equipment',serial:null,date:'2022-01-01'},
 };
-
+ 
 // ── STATE ────────────────────────────────
 let S={user:null,branch:null,sid:null,scanned:new Set(),log:[],total:Object.keys(DB).length,scanner:null,cd:false};
-
+ 
 // ── LOGIN ────────────────────────────────
 function doLogin(){
   const id=document.getElementById('li').value.trim();
@@ -369,14 +376,14 @@ function doLogout(){
   S={...S,user:null,branch:null,scanned:new Set(),log:[],scanner:null,cd:false};
   go('sl');
 }
-
+ 
 // ── CAMERA ──────────────────────────────
-
+ 
 // ── UROVO HARDWARE SCANNER ───────────────────────────────────
 let urovoBuffer = '';
 let urovoTimer  = null;
 const SCAN_TIMEOUT = 80;
-
+ 
 function focusScanner() {
   const inp = document.getElementById('urovo-input');
   if (!inp) return;
@@ -385,26 +392,24 @@ function focusScanner() {
   inp.focus();
   updateFocusStatus(true);
 }
-
+ 
 function updateFocusStatus(focused) {
   const el = document.getElementById('focus-status');
   const st = document.getElementById('sc-stat-txt');
   if (!el) return;
   if (focused) {
-    el.style.background = 'rgba(34,122,60,0.3)';
-    el.style.color = '#22d47a';
-    el.style.borderColor = 'rgba(34,122,60,0.4)';
+    el.style.background = 'rgba(255,255,255,.2)';
+    el.style.color = '#fff';
     el.textContent = 'READY';
-    if (st) st.textContent = 'Hardware scanner ready — press trigger to scan';
+    if (st) st.textContent = 'Hardware scanner ready';
   } else {
-    el.style.background = 'rgba(245,166,35,0.2)';
-    el.style.color = '#f5a623';
-    el.style.borderColor = 'rgba(245,166,35,0.3)';
+    el.style.background = 'rgba(255,255,255,.1)';
+    el.style.color = 'rgba(255,255,255,.6)';
     el.textContent = 'TAP TO FOCUS';
-    if (st) st.textContent = 'Tap the screen to activate scanner';
+    if (st) st.textContent = 'Tap screen to activate';
   }
 }
-
+ 
 function processScan(code) {
   code = code.trim();
   if (!code || S.cd) return;
@@ -412,16 +417,16 @@ function processScan(code) {
   setTimeout(() => S.cd = false, 2500);
   scan(code);
 }
-
+ 
 function initUrovoScanner() {
   const inp = document.getElementById('urovo-input');
   if (!inp) return;
-
+ 
   // Focus immediately — remove readonly so scanner can write, inputmode=none hides keyboard
   inp.removeAttribute('readonly');
   inp.setAttribute('inputmode', 'none');
   inp.focus();
-
+ 
   // Track focus state
   inp.addEventListener('focus', () => updateFocusStatus(true));
   inp.addEventListener('blur',  () => {
@@ -437,7 +442,7 @@ function initUrovoScanner() {
       }
     }, 200);
   });
-
+ 
   // Refocus on any tap outside form fields
   document.addEventListener('touchend', (e) => {
     const t = e.target;
@@ -446,7 +451,7 @@ function initUrovoScanner() {
       setTimeout(() => { inp.focus(); updateFocusStatus(true); }, 50);
     }
   });
-
+ 
   // Method 1: input event (character by character)
   inp.addEventListener('input', () => {
     urovoBuffer += inp.value;
@@ -460,7 +465,7 @@ function initUrovoScanner() {
       }
     }, SCAN_TIMEOUT);
   });
-
+ 
   // Method 2: keydown Enter (Urovo sends Enter after barcode)
   inp.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
@@ -474,7 +479,7 @@ function initUrovoScanner() {
       if (code.trim()) processScan(code);
     }
   });
-
+ 
   // Keepalive: refocus every 3s if no form is active and scanner screen visible
   setInterval(() => {
     if (!document.getElementById('ss')?.classList.contains('active')) return;
@@ -488,7 +493,7 @@ function initUrovoScanner() {
     }
   }, 3000);
 }
-
+ 
 function initCam(){
   if(S.scanner)return;
   S.scanner=new Html5Qrcode('qr-reader');
@@ -500,7 +505,7 @@ function initCam(){
     document.querySelector('.sc-vp').innerHTML='<div style="padding:40px;text-align:center;color:#888;font-size:13px;">Camera unavailable<br><br>Use the search box below</div>';
   });
 }
-
+ 
 // ── SCAN ────────────────────────────────
 function scan(raw){
   const key=raw.replace(/\s/g,'');
@@ -516,7 +521,7 @@ function scan(raw){
 }
 function handleManual(){const v=document.getElementById('mc').value.trim();if(!v)return;scan(v);document.getElementById('mc').value='';}
 document.addEventListener('keypress',e=>{if(e.key==='Enter'&&document.activeElement.id==='mc')handleManual();});
-
+ 
 // ── RENDER ───────────────────────────────
 function rMatch(k,a){return`
 <div class="rc matched">
@@ -532,7 +537,7 @@ function rMatch(k,a){return`
     <button class="btn-save" onclick="saveRemark('${k}','${a.name}')">SAVE & NEXT</button>
   </div>
 </div>`;}
-
+ 
 function rSerial(k,a){return`
 <div class="rc mismatch">
   <div class="rc-hdr"><div class="rc-ico">!</div><div><div class="rc-lbl">Computer — verify serial no.</div><div class="rc-txt">SERIAL CHECK REQUIRED</div></div></div>
@@ -549,7 +554,7 @@ function rSerial(k,a){return`
     </div>
   </div>
 </div>`;}
-
+ 
 function rUnmatch(k){return`
 <div class="rc unmatched">
   <div class="rc-hdr"><div class="rc-ico">?</div><div><div class="rc-lbl">Not found in system</div><div class="rc-txt">LOG AS UNMATCHED</div></div></div>
@@ -573,13 +578,13 @@ function rUnmatch(k){return`
     </div>
   </div>
 </div>`;}
-
+ 
 function rDup(k){return`
 <div class="rc dup">
   <div class="rc-hdr"><div class="rc-ico">↺</div><div><div class="rc-lbl">Already scanned this session</div><div class="rc-txt">DUPLICATE</div></div></div>
   <div class="rc-body"><div class="ir"><span class="il">Code</span><span class="iv">${k}</span></div></div>
 </div>`;}
-
+ 
 // ── ACTIONS ──────────────────────────────
 function saveRemark(k,n){commit(k,n,'matched',{remark:document.getElementById('rm-'+k)?.value||''});hideR();}
 function doSerial(k,n,exp,match){
@@ -614,7 +619,7 @@ function commit(k,n,type,extra={}){
   S.log.unshift({k,n,type,t,...extra});
   updatePB();renderList();
 }
-
+ 
 // ── PROGRESS & LIST ──────────────────────
 function updatePB(){
   const c=S.scanned.size,tot=S.total,pct=tot?Math.round(c/tot*100):0;
@@ -633,10 +638,10 @@ function renderList(){
       <div class="stime">${s.t}</div>
     </div>`).join('');
 }
-
+ 
 // ── SCREENS ──────────────────────────────
 function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
-
+ 
 function showLog(){
   document.getElementById('log-cnt').textContent=S.log.length+' items';
   document.getElementById('log-body').innerHTML=S.log.length
@@ -654,7 +659,7 @@ function showLog(){
     :'<div style="text-align:center;padding:40px;color:var(--gray4);font-size:13px;">No scans yet</div>';
   go('slog');
 }
-
+ 
 function showSum(){
   const matched=S.log.filter(s=>s.type==='matched').length;
   const mism=S.log.filter(s=>s.type==='mismatch').length;
@@ -678,7 +683,7 @@ function showSum(){
   go('ssum');
 }
 function sc(l,v,c){return`<div class="stat-card"><div class="stat-label">${l}</div><div class="stat-val" style="color:${c};">${v}</div></div>`;}
-
+ 
 // ── TOAST ────────────────────────────────
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 </script>
