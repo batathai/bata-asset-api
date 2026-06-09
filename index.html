@@ -497,11 +497,47 @@ function selectBranch(code, name, display) {
   document.getElementById('branch-drop').style.display = 'none';
 }
 
-function doLogin(){
-  const id=document.getElementById('li').value.trim();
-  const pw=document.getElementById('lp').value;
-  const br=document.getElementById('lb').value.trim();
+async function doLogin(){
+  const id  = document.getElementById('li').value.trim();
+  const pw  = document.getElementById('lp').value;
+  const br  = document.getElementById('lb').value.trim();
   if(!id||!pw||!br){showErr('Please select a branch');return;}
+
+  const btn = document.querySelector('.btn-login');
+  btn.textContent = 'Signing in...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(API+'/auth/login', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({employee_id:id, password:pw, branch_id:br})
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.detail||'Login failed');
+
+    S.token  = data.token;
+    S.user   = id;
+    S.branch = br;
+    S.sid    = null;
+
+    const branchObj = BRANCHES.find(b=>b.code===br);
+    const branchName = branchObj ? branchObj.name : br;
+    document.getElementById('hinfo').textContent = id+' · '+branchName;
+    document.getElementById('sum-branch').textContent = 'Branch '+br;
+
+    go('ss');
+    initUrovoScanner();
+    await startSession();
+    await loadChecklist(br);
+    saveSession();
+  } catch(e) {
+    showErr(e.message);
+  } finally {
+    btn.textContent = 'SIGN IN';
+    btn.disabled = false;
+  }
+}
   S.user=id;S.branch=br;S.sid=Date.now();
   const branchObj = BRANCHES.find(b=>b.code===br);
   const branchName = branchObj ? branchObj.name : br;
@@ -655,16 +691,57 @@ function initCam(){
 }
 
 // ── SCAN ────────────────────────────────
-function scan(raw){
-  const key=raw.replace(/\s/g,'');
-  const area=document.getElementById('ra');
-  area.style.display='block';
-  if(S.scanned.has(key)){area.innerHTML=rDup(key);toast('Already scanned this session');area.scrollIntoView({behavior:'smooth',block:'nearest'});return;}
-  const asset=DB[key];
-  if(asset){
-    if(asset.cat==='Computer')area.innerHTML=rSerial(key,asset);
-    else{area.innerHTML=rMatch(key,asset);commit(key,asset.name,'matched');}
-  }else{area.innerHTML=rUnmatch(key);toast('Not found — log as unmatched');}
+async function scan(raw) {
+  const key  = raw.replace(/\s/g,'');
+  const area = document.getElementById('ra');
+  area.style.display = 'block';
+
+  if(S.scanned.has(key)){
+    area.innerHTML = rDup(key);
+    toast('Already scanned');
+    area.scrollIntoView({behavior:'smooth',block:'nearest'});
+    return;
+  }
+
+  area.innerHTML = `<div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:24px;text-align:center;color:var(--gray3);font-size:13px;">
+    <div style="margin-bottom:8px;font-size:20px;">🔍</div>
+    Looking up asset...<br>
+    <span style="font-family:var(--mono);font-size:12px;color:var(--red);margin-top:6px;display:block;">${key}</span>
+  </div>`;
+
+  try {
+    const res = await fetch(API+'/assets/lookup/'+encodeURIComponent(key), {
+      headers:{'Authorization':'Bearer '+S.token}
+    });
+    const data = await res.json();
+
+    if(!data.found){
+      area.innerHTML = rUnmatch(key);
+      toast('Not found in system');
+    } else {
+      const asset = data.asset;
+      const isComputer = asset.asset_code?.startsWith('COM') ||
+        ['notebook','laptop','computer','dell','lenovo','hp ','asus','acer'].some(w=>
+          asset.name?.toLowerCase().includes(w));
+      const a = {
+        name:   asset.name,
+        cat:    isComputer ? 'Computer' : 'Equipment',
+        serial: asset.serial_no,
+        date:   asset.purchase_date,
+        loc:    asset.location_name || asset.location_code,
+      };
+      if(isComputer && a.serial){
+        area.innerHTML = rSerial(key, a);
+      } else {
+        area.innerHTML = rMatch(key, a);
+        commit(key, a.name, 'matched');
+        saveScanLog(key, 'matched', {});
+      }
+    }
+  } catch(e) {
+    area.innerHTML = rUnmatch(key);
+    toast('Error: '+e.message);
+  }
   area.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 async function handleManual(){
@@ -741,14 +818,14 @@ function rDup(k){return`
 
 // ── ACTIONS ──────────────────────────────
 async function saveRemark(k,n){const r=document.getElementById('rm-'+k)?.value||'';commit(k,n,'matched',{remark:r});await saveScanLog(k,'matched',{remark:r});hideR();}
-async function doSerial(k,n,exp,match){
+async async function doSerial(k,n,exp,match){
   const found=document.getElementById('sr-'+k)?.value||'';
   const remark=document.getElementById('rm-'+k)?.value||'';
   commit(k,n,match?'matched':'mismatch',{serial_found:found,serial_match:match,remark});
   await saveScanLog(k,match?'matched':'mismatch',{serial_found:found,serial_match:match,remark});
   toast(match?'Serial verified ✓':'Serial mismatch — flagged to HQ');hideR();
 }
-async function doUnmatch(k){
+async async function doUnmatch(k){
   const n=document.getElementById('un-'+k)?.value||'Unknown device';
   const s=document.getElementById('us-'+k)?.value||'';
   const r=document.getElementById('ur-'+k)?.value||'';
@@ -840,6 +917,49 @@ function showSum(){
   go('ssum');
 }
 function sc(l,v,c){return`<div class="stat-card"><div class="stat-label">${l}</div><div class="stat-val" style="color:${c};">${v}</div></div>`;}
+
+
+async function startSession(){
+  try{
+    const today = new Date().toISOString().slice(0,10);
+    const res = await fetch(API+'/sessions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.token},
+      body: JSON.stringify({branch_id:S.branch, audit_date:today})
+    });
+    const d = await res.json();
+    S.sid = d.session_id;
+  }catch(e){ S.sid = Date.now(); }
+}
+
+async function saveScanLog(qrKey, type, extra={}){
+  if(!S.sid||!S.token) return;
+  try{
+    await fetch(API+'/scans',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.token},
+      body: JSON.stringify({session_id:S.sid, qr_key:qrKey,
+        serial_found:extra.serial_found||null,
+        serial_match:extra.serial_match??null,
+        condition:extra.condition||'good',
+        remark:extra.remark||null})
+    });
+  }catch(e){}
+}
+
+async function saveUnmatched(qrKey, extra={}){
+  if(!S.sid||!S.token) return;
+  try{
+    await fetch(API+'/unmatched',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.token},
+      body: JSON.stringify({session_id:S.sid, scanned_qr:qrKey,
+        serial_no:extra.serial_no||null,
+        name_guess:extra.name||null,
+        remark:extra.remark||null})
+    });
+  }catch(e){}
+}
 
 // ── TOAST ────────────────────────────────
 
