@@ -528,6 +528,7 @@ async function doLogin(){
 
     go('ss');
     initUrovoScanner();
+    warmupAPI(); // ping API ให้ตื่น (ไม่ต้อง await)
     await startSession();
     await loadChecklist(br);
     saveSession();
@@ -551,7 +552,7 @@ function doLogout(){
 // ── UROVO HARDWARE SCANNER ───────────────────────────────────
 let urovoBuffer = '';
 let urovoTimer  = null;
-const SCAN_TIMEOUT = 80;
+const SCAN_TIMEOUT = 300; // เพิ่มจาก 80ms เพื่อรอ Urovo ส่งครบ
 
 function focusScanner() {
   const inp = document.getElementById('urovo-input');
@@ -654,6 +655,11 @@ function initUrovoScanner() {
     }
   });
 
+  // Ping API ทุก 4 นาที ป้องกัน Railway sleep
+  setInterval(() => {
+    if (S.token) fetch(API+'/health').catch(()=>{});
+  }, 4 * 60 * 1000);
+
   // Keepalive: refocus every 5s ถ้าไม่มี form active และไม่มี result card แสดงอยู่
   setInterval(() => {
     if (!document.getElementById('ss')?.classList.contains('active')) return;
@@ -697,15 +703,29 @@ async function scan(raw) {
   }
 
   area.innerHTML = `<div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:24px;text-align:center;color:var(--gray3);font-size:13px;">
-    <div style="margin-bottom:8px;font-size:20px;">🔍</div>
+    <div style="margin-bottom:10px;">
+      <div style="width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 8px;"></div>
+    </div>
     Looking up asset...<br>
     <span style="font-family:var(--mono);font-size:12px;color:var(--red);margin-top:6px;display:block;">${key}</span>
   </div>`;
 
+  // เพิ่ม spin animation ถ้ายังไม่มี
+  if(!document.getElementById('spin-style')){
+    const s=document.createElement('style');
+    s.id='spin-style';
+    s.textContent='@keyframes spin{to{transform:rotate(360deg)}}';
+    document.head.appendChild(s);
+  }
+
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
     const res = await fetch(API+'/assets/lookup/'+encodeURIComponent(key), {
-      headers:{'Authorization':'Bearer '+S.token}
+      headers:{'Authorization':'Bearer '+S.token},
+      signal: controller.signal
     });
+    clearTimeout(timeout);
     const data = await res.json();
 
     if(!data.found){
@@ -732,8 +752,15 @@ async function scan(raw) {
       }
     }
   } catch(e) {
-    area.innerHTML = rUnmatch(key);
-    toast('Error: '+e.message);
+    if(e.name === 'AbortError') {
+      // timeout — ลองใหม่อัตโนมัติ 1 ครั้ง
+      toast('Connection slow — retrying...');
+      setTimeout(() => scan(key), 1000);
+      area.style.display = 'none';
+    } else {
+      area.innerHTML = rUnmatch(key);
+      toast('Error: '+e.message);
+    }
   }
   area.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
@@ -950,6 +977,11 @@ function showSum(){
 }
 function sc(l,v,c){return`<div class="stat-card"><div class="stat-label">${l}</div><div class="stat-val" style="color:${c};">${v}</div></div>`;}
 
+
+async function warmupAPI(){
+  // ping API ให้ตื่นก่อน เพื่อไม่ให้ scan ครั้งแรกช้า
+  try { await fetch(API+'/health'); } catch(e){}
+}
 
 async function startSession(){
   try{
